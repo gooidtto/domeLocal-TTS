@@ -61,3 +61,6 @@ Sherpa Reader 自身代码与 sherpa-onnx、Kokoro 模型及第三方依赖分�
 ## CI
 
 GitHub Actions workflow: `.github/workflows/sherpa-reader-windows.yml`. It runs Windows x64 dependency installation, Python compilation, sentence-splitting tests, PyInstaller packaging, and uploads a build artifact.
+
+
+当前句子跟随使用单调向前的文档游标，避免相同句子重复出现时跳回前文。
