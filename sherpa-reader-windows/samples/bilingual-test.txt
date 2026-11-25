@@ -1,0 +1,7 @@
+你好，欢迎使用 Sherpa Reader。今天我们测试中文朗读、英文朗读，以及中英文混合朗读。
+
+This is an English passage for testing pronunciation, rhythm, punctuation, and natural pauses.
+
+Sherpa Reader uses Kokoro Multilingual with sherpa-onnx. 版本 v1.1 将用于本轮模型测试。
+
+请检查多音字：银行、行走、重新、重要；日期：2026年11月24日；缩写：CPU、ONNX、TTS。
