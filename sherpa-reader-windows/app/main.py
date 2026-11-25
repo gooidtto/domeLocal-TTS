@@ -9,6 +9,7 @@ from pathlib import Path
 import sherpa_onnx
 import soundfile as sf
 from PySide6.QtCore import Qt, QThread, Signal, QUrl
+from PySide6.QtGui import QTextCursor
 from PySide6.QtMultimedia import QAudioOutput, QMediaPlayer
 from PySide6.QtWidgets import (
     QApplication, QFileDialog, QHBoxLayout, QLabel, QMainWindow,
@@ -97,6 +98,7 @@ class SherpaReader(QMainWindow):
         self.sentences: list[str] = []
         self.index = 0
         self.worker = None
+        self.search_cursor = None
         self.temp_dir = Path(tempfile.mkdtemp(prefix="sherpa-reader-"))
         self.audio_output = QAudioOutput(self)
         self.player = QMediaPlayer(self)
@@ -173,6 +175,8 @@ class SherpaReader(QMainWindow):
             return
         self.sentences = split_sentences(content)
         self.index = 0
+        self.search_cursor = self.editor.textCursor()
+        self.search_cursor.movePosition(QTextCursor.Start)
         self.play_button.setEnabled(False)
         self.synthesize_current()
 
@@ -190,9 +194,11 @@ class SherpaReader(QMainWindow):
         self.worker.start()
 
     def on_audio_ready(self, filename: str, _sample_rate: int, sentence: str):
-        cursor = self.editor.document().find(sentence)
+        cursor = self.editor.document().find(sentence, self.search_cursor)
         if not cursor.isNull():
             self.editor.setTextCursor(cursor)
+            self.search_cursor = QTextCursor(cursor)
+            self.search_cursor.setPosition(cursor.selectionEnd())
             self.editor.ensureCursorVisible()
         self.player.setSource(QUrl.fromLocalFile(filename))
         self.player.play()
