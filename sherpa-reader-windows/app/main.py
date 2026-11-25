@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 import sys
 import tempfile
+import threading
 from pathlib import Path
 
 import sherpa_onnx
@@ -16,6 +17,8 @@ from PySide6.QtWidgets import (
 
 ROOT = Path(__file__).resolve().parents[1]
 MODEL_DIR = ROOT / "models" / "kokoro-multi-lang-v1_1"
+_TTS_ENGINE = None
+_TTS_ENGINE_LOCK = threading.Lock()
 
 
 def split_sentences(text: str) -> list[str]:
@@ -25,6 +28,10 @@ def split_sentences(text: str) -> list[str]:
 
 
 def create_tts():
+    global _TTS_ENGINE
+    with _TTS_ENGINE_LOCK:
+        if _TTS_ENGINE is not None:
+            return _TTS_ENGINE
     required = ["model.onnx", "voices.bin", "tokens.txt",
                 "lexicon-us-en.txt", "lexicon-zh.txt"]
     missing = [name for name in required if not (MODEL_DIR / name).exists()]
@@ -49,7 +56,11 @@ def create_tts():
     config = sherpa_onnx.OfflineTtsConfig(model=model)
     if not config.validate():
         raise RuntimeError("sherpa-onnx TTS 配置校验失败")
-    return sherpa_onnx.OfflineTts(config)
+    engine = sherpa_onnx.OfflineTts(config)
+    with _TTS_ENGINE_LOCK:
+        if _TTS_ENGINE is None:
+            _TTS_ENGINE = engine
+        return _TTS_ENGINE
 
 
 class SynthesisWorker(QThread):
