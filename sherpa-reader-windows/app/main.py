@@ -69,7 +69,7 @@ class SynthesisWorker(QThread):
             generation.sid = self.speaker_id
             generation.speed = 1.0
             audio = tts.generate(self.sentence, generation)
-            if not audio.samples:
+            if len(audio.samples) == 0:
                 raise RuntimeError("模型没有生成音频数据")
             sf.write(str(self.output_path), audio.samples, audio.sample_rate,
                      subtype="PCM_16")
