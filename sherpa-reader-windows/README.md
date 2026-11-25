@@ -56,3 +56,8 @@ pyinstaller --noconfirm --clean --windowed --name SherpaReader app\main.py
 ## 许可证
 
 Sherpa Reader 自身代码与 sherpa-onnx、Kokoro 模型及第三方依赖分别遵循各自许可证。发布前需要逐项核验。
+
+
+## CI
+
+GitHub Actions workflow: `.github/workflows/sherpa-reader-windows.yml`. It runs Windows x64 dependency installation, Python compilation, sentence-splitting tests, PyInstaller packaging, and uploads a build artifact.
